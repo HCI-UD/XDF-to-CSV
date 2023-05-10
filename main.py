@@ -5,7 +5,9 @@ import numpy as np
 import csv
 relative_timestamps = True
 
-data, header = pyxdf.load_xdf('test.xdf')
+filename = "sub-P001_ses-S001_task-Default_run-001_eeg"
+
+data, header = pyxdf.load_xdf(filename+'.xdf')
 channels_dict = data[0]['info']['desc'][0]['channels'][0]['channel']
 channels = [c['label'][0] for c in channels_dict]
 print(channels)
@@ -24,7 +26,7 @@ timed_data = full_data['time_series']
 
 outdata = np.concatenate((time_stamps, timed_data), axis=1)
 
-with open("output.csv",'w',newline='') as file:
+with open(filename+".csv",'w',newline='') as file:
     writer = csv.writer(file)
     out_header = ["timestamp"] + channels
     writer.writerow(out_header)
