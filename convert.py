@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import csv
-
+# using the command 'pyinstaller --onefile --specpath ./specs --noconsole ./gui.py' to generate the exe
 
 def convert_file(filepath, relative_timestamps):
     if (filepath[-3:] != "xdf"):
