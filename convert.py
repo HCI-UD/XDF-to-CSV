@@ -3,16 +3,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import csv
-relative_timestamps = True
 
-def convertFile(filePath, relativeTimestamps):
-    if(filePath[-3:] != "xdf"):
+
+def convert_file(filepath, relative_timestamps):
+    if (filepath[-3:] != "xdf"):
         return [1, "Specified file is not XDF"]
 
-    data, header = [0,0]
+    data, header = [0, 0]
 
     try:
-        data, header = pyxdf.load_xdf(filePath)
+        data, header = pyxdf.load_xdf(filepath)
     except:
         return [2, "Could not open file"]
     channels_dict = data[0]['info']['desc'][0]['channels'][0]['channel']
@@ -28,7 +28,7 @@ def convertFile(filePath, relativeTimestamps):
 
     outdata = np.concatenate((time_stamps, timed_data), axis=1)
 
-    with open(filePath[:-3] + ".csv", 'w', newline='') as file:
+    with open(filepath[:-3] + "csv", 'w', newline='') as file:
         writer = csv.writer(file)
         out_header = ["timestamp"] + channels
         writer.writerow(out_header)
