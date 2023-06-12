@@ -15,26 +15,38 @@ def convert_file(filepath, relative_timestamps):
         data, header = pyxdf.load_xdf(filepath)
     except:
         return [2, "Could not open file"]
-    channels_dict = data[0]['info']['desc'][0]['channels'][0]['channel']
-    channels = [c['label'][0] for c in channels_dict]
+    for i in range(len(data)):
+        channels_desc = data[i]['info']['desc']
+        if channels_desc is not None and channels_desc[0] is not None:
+            channels_dict = channels_desc[0]['channels'][0]['channel']
+            channels = [c['label'][0] for c in channels_dict]
+        else:
+            channels = [("channel_"+str(c)) for c in range(int(data[i]['info']['channel_count'][0]))]
 
-    full_data = data[0]
-    if relative_timestamps:
-        time_stamps = full_data['time_stamps'] - full_data['time_stamps'][0]
-        time_stamps = np.reshape(time_stamps, (time_stamps.shape[0], 1))
-    else:
-        time_stamps = np.reshape(full_data['time_stamps'], (full_data['time_stamps'].shape[0], 1))
-    timed_data = full_data['time_series']
+        outdata = []
+        full_data = data[i]
+        if full_data['time_stamps'].shape[0] > 0:
+            if relative_timestamps:
+                time_stamps = full_data['time_stamps'] - full_data['time_stamps'][0]
+                time_stamps = np.reshape(time_stamps, (time_stamps.shape[0], 1))
+            else:
+                time_stamps = np.reshape(full_data['time_stamps'], (full_data['time_stamps'].shape[0], 1))
+            timed_data = full_data['time_series']
 
-    outdata = np.concatenate((time_stamps, timed_data), axis=1)
+            outdata = np.concatenate((time_stamps, timed_data), axis=1)
 
-    with open(filepath[:-3] + "csv", 'w', newline='') as file:
-        writer = csv.writer(file)
-        out_header = ["timestamp"] + channels
-        writer.writerow(out_header)
-        writer.writerows(outdata)
-        file.flush()
-        file.close()
+        if data[i]['info']['name'] is not None and data[i]['info']['name'][0] is not None:
+            outfile = filepath[:-4] + "_" + data[i]['info']['name'][0] + '.csv'
+        else:
+            outfile = filepath[:-4] + '_' + str(i) + '.csv'
+
+        with open(outfile, 'w', newline='') as file:
+            writer = csv.writer(file)
+            out_header = ["timestamp"] + channels
+            writer.writerow(out_header)
+            writer.writerows(outdata)
+            file.flush()
+            file.close()
 
     return [0, "File saved successfully"]
 
