@@ -1,5 +1,4 @@
 *.csv
 *.xdf
 build/
-dist/
 specs/
