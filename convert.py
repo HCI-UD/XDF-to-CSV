@@ -17,6 +17,9 @@ def convert_file(filepath, relative_timestamps):
         return [2, "Could not open file"]
     for i in range(len(data)):
         channels_desc = data[i]['info']['desc']
+        """
+         * Sometimes there doesn't exist a channel_desc, so we need to check, and create new channel names
+        """
         if channels_desc is not None and channels_desc[0] is not None:
             channels_dict = channels_desc[0]['channels'][0]['channel']
             channels = [c['label'][0] for c in channels_dict]
@@ -25,6 +28,9 @@ def convert_file(filepath, relative_timestamps):
 
         outdata = []
         full_data = data[i]
+        """
+         * Convert the data to the proper format, but only if there actually is data in the file
+        """
         if full_data['time_stamps'].shape[0] > 0:
             if relative_timestamps:
                 time_stamps = full_data['time_stamps'] - full_data['time_stamps'][0]
@@ -35,6 +41,9 @@ def convert_file(filepath, relative_timestamps):
 
             outdata = np.concatenate((time_stamps, timed_data), axis=1)
 
+        """
+         * Save new file, with the name of the stream
+        """
         if data[i]['info']['name'] is not None and data[i]['info']['name'][0] is not None:
             outfile = filepath[:-4] + "_" + data[i]['info']['name'][0] + '.csv'
         else:
