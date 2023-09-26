@@ -5,7 +5,7 @@ import convert
 sg.theme('SystemDefaultForReal')   # Add a touch of color
 # All the stuff inside your window.
 layout = [
-            [sg.Text("Choose a file: "), sg.Input(key="-IN2-",change_submits=True), sg.FileBrowse(key="-IN-")],
+            [sg.Text("Choose a file: "), sg.Input(key="-IN2-",change_submits=True), sg.FilesBrowse(key="-IN-")],
             [sg.Checkbox("Use relative timestamps", default=True, key='check')],
             [sg.Button('Convert')],
             [sg.Text("Waiting for file selection", key="status")]
@@ -22,9 +22,11 @@ while True:
         print(values["-IN2-"])
         print(values["check"])
         window["status"].update("Converting file")
-        return_status = convert.convert_file(values["-IN2-"], values["check"])
-        print(return_status)
-        window["status"].update(return_status[1])
+        filenames = values["-IN2-"].split(";")
+        for filename in filenames:
+            return_status = convert.convert_file(filename, values["check"])
+            print(return_status)
+            window["status"].update(return_status[1])
 
 
 window.close()
