@@ -5,16 +5,16 @@ import numpy as np
 import csv
 # using the command 'pyinstaller --onefile --specpath ./specs --noconsole ./gui.py' to generate the exe
 
-def convert_file(filepath, relative_timestamps):
+def convert_file(filepath, relative_timestamps, outfolder=""):
     if (filepath[-3:] != "xdf"):
-        return [1, "Specified file is not XDF"]
+        return [-1, "Specified file is not XDF"]
 
     data, header = [0, 0]
 
     try:
         data, header = pyxdf.load_xdf(filepath)
     except:
-        return [2, "Could not open file"]
+        return [-2, "Could not open file"]
     for i in range(len(data)):
         channels_desc = data[i]['info']['desc']
         """
@@ -42,12 +42,23 @@ def convert_file(filepath, relative_timestamps):
             outdata = np.concatenate((time_stamps, timed_data), axis=1)
 
         """
+         * Get name of file, without file extension or full path
+        """
+        path_parts = filepath.split("/")
+        filename = path_parts[-1][:-4]
+
+        """
          * Save new file, with the name of the stream
         """
-        if data[i]['info']['name'] is not None and data[i]['info']['name'][0] is not None:
-            outfile = filepath[:-4] + "_" + data[i]['info']['name'][0] + '.csv'
+        if outfolder != "":
+            outfile = outfolder + "/" + filename
         else:
-            outfile = filepath[:-4] + '_' + str(i) + '.csv'
+            outfile = filepath[:-4]
+
+        if data[i]['info']['name'] is not None and data[i]['info']['name'][0] is not None:
+            outfile = outfile + "_" + data[i]['info']['name'][0] + '.csv'
+        else:
+            outfile = outfile + '_' + str(i) + '.csv'
 
         with open(outfile, 'w', newline='') as file:
             writer = csv.writer(file)
@@ -57,7 +68,7 @@ def convert_file(filepath, relative_timestamps):
             file.flush()
             file.close()
 
-    return [0, "File saved successfully"]
+    return [0, "File converted successfully"]
 
 
 """for stream in data:
