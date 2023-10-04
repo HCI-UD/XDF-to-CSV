@@ -2,3 +2,4 @@
 *.xdf
 build/
 specs/
+.idea/
