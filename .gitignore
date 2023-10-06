@@ -4,3 +4,4 @@ build/
 specs/
 .idea/
 *.iml
+__pycache__/
