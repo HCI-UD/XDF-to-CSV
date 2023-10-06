@@ -12,8 +12,8 @@ input files  When selected, you can click the *Convert* button to start converti
 CSV files have the same name as the XDF files and are put in the same folder.
 
 Additionally, the *Use relative timestamps* checkbox allows you to standardize the timestamps for the files with the 
-first timestamp, so they are in a more reasonable range.
+first timestamp, so they are in a more reasonable range.  This standardizes the streams in each of the files to use the 
+minimum timestamp used in that file.
 
 ## Planned Changes
-Currently the timestamps are standardized for each strean, but in the future, this will be changed to standardize across 
-all streams in each file.
+All planned changes have been implemented.  In the future, there will be more changes, bug fixes, etc.
