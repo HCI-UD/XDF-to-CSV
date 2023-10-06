@@ -15,6 +15,21 @@ def convert_file(filepath, relative_timestamps, outfolder=""):
         data, header = pyxdf.load_xdf(filepath)
     except:
         return [-2, "Could not open file"]
+
+    """
+     * This gets the minimum timestamp from each of the streams for the timestamp standardization
+     * The first timestamp is used instead of the footer value of 'first_timestamp' because the actual first value uses
+     * the proper timestamp correction/offset
+    """
+    if relative_timestamps:
+        min_timestamp = float(-1)
+        for i in range(len(data)):
+            # temp_time = float(data[i]['footer']['info']['first_timestamp'][0])
+            if data[i]['time_stamps'].shape[0] > 0:
+                temp_time = data[i]['time_stamps'][0]
+            if min_timestamp == -1 or temp_time < min_timestamp:
+                min_timestamp = temp_time
+
     for i in range(len(data)):
         channels_desc = data[i]['info']['desc']
         """
@@ -33,7 +48,7 @@ def convert_file(filepath, relative_timestamps, outfolder=""):
         """
         if full_data['time_stamps'].shape[0] > 0:
             if relative_timestamps:
-                time_stamps = full_data['time_stamps'] - full_data['time_stamps'][0]
+                time_stamps = full_data['time_stamps'] - min_timestamp
                 time_stamps = np.reshape(time_stamps, (time_stamps.shape[0], 1))
             else:
                 time_stamps = np.reshape(full_data['time_stamps'], (full_data['time_stamps'].shape[0], 1))

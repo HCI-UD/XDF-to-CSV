@@ -1,6 +1,7 @@
 import PySimpleGUI as sg
 
 import convert
+# using the command 'pyinstaller --onefile --specpath ./specs --noconsole ./gui.py' to generate the exe
 
 sg.theme('SystemDefaultForReal')   # Add a touch of color
 # All the stuff inside your window.
