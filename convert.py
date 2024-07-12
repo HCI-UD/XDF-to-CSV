@@ -1,10 +1,33 @@
 import pyxdf
 import numpy as np
-
+import re
+import os
 import csv
 
 
-# using the command 'pyinstaller --onefile --specpath ./specs --noconsole ./gui.py' to generate the exe
+# using the command 'pyinstaller --onefile --specpath ./specs --noconsole ./gui.py' to generate the ex
+
+
+def sanitize_filename(full_path):
+    # Separate the path from the filename
+    path, filename = os.path.split(full_path)
+
+    # Remove invalid characters from the filename
+    filename = re.sub(r'[\\/*?:"<>|]', "", filename)
+    # Replace spaces or multiple dots with a single underscore
+    filename = re.sub(r'\s+', '_', filename)
+    filename = re.sub(r'\.+', '.', filename)
+    # Avoid leading or trailing dots
+    filename = filename.strip(".")
+
+    # Truncate long filenames
+    max_length = 255
+    if len(filename) > max_length:
+        extension = filename.split('.')[-1]
+        filename = filename[:max_length - len(extension) - 1] + '.' + extension
+
+    # Rejoin path and filename
+    return os.path.join(path, filename)
 
 def convert_file(filepath, relative_timestamps, out_folder=""):
     if filepath[-3:] != "xdf":
@@ -75,7 +98,8 @@ def convert_file(filepath, relative_timestamps, out_folder=""):
             outfile = outfile + "_" + data[i]['info']['name'][0] + '.csv'
         else:
             outfile = outfile + '_' + str(i) + '.csv'
-
+        outfile = sanitize_filename(outfile)
+        
         with open(outfile, 'w', newline='') as file:
             writer = csv.writer(file)
             out_header = ["timestamp"] + channels
